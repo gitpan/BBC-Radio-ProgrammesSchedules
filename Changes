@@ -1,4 +1,8 @@
 Revision history for BBC-Radio-ProgrammesSchedules
 
+0.02    Mon Apr 04 16:57:00 2011
+        - Corrected pod for CONSTRUCTOR.
+        - Added method as_string().
+
 0.01    Mon Apr 04 12:26:10 2011
         - First version released.

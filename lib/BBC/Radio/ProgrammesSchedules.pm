@@ -2,6 +2,8 @@ package BBC::Radio::ProgrammesSchedules;
 
 use strict; use warnings;
 
+use overload q("") => \&as_string, fallback => 1;
+
 use Carp;
 use Readonly;
 use Data::Dumper;
@@ -14,11 +16,11 @@ BBC::Radio::ProgrammesSchedules - Interface to BBC Radio programmes schedules.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 Readonly my $BASE_URL => 'http://www.bbc.co.uk';
 Readonly my $CHANNELS => 
@@ -43,13 +45,13 @@ Readonly my $LOCATIONS =>
                 northernireland => 'Northern Ireland',
                 scotland        => 'Scotland',
                 wales           => 'Wales' },
-    radio4 => { fm => 'FM', 
+    radio4 => { fm => 'FM',
                 lw => 'LW' }
 };
 
 =head1 SYNOPSIS
 
-Each week, nearly 35 million people listen to BBC Radio. The BBC offers a portfolio of services aimed 
+Each week, nearly 35 million people listen to BBC Radio. The BBC offers a portfolio of services aimed
 at offering listeners the highest quality programmes, whatever their interest or mood.
 
 =head2 BBC Radio includes
@@ -73,13 +75,13 @@ and many more.
 =head1 CONSTRUCTOR
 
 The  module  provides  programmes  schedules for Radio 1, 1Xtra, Radio 2, Radio 3, Radio 4,
-Radio 4 Extra, 5 Live, 5 Live Sports Extra, 6 Music, Radio 7, Asian Network, World Service.
-The  constructor  expects  a reference to an anonymous hash as input parameter. For most of
-the radion channels, the  minimum it expects are channel name, year, month(1 for Jan, 2 for
-Feb and son on) and day. However for channel Radio 1, you also need to provide the location
-information. The possible values are england (England), northernireland (Norhtern Ireland),
-scotland(Scotland)  and wales(Wales). And for channel Radio 4, the possible values are FM &
-LW.
+Radio  4  Extra,  5  Live,  5 Live Sports Extra, 6 Music,  Radio 7, Asian Network and World
+Service.  The  constructor expects a reference to an anonymous hash as input parameter. For
+most of the radio channels, the minimum it expects are channel name, year, month(1 for Jan,
+2 for Feb and so on)  and day.  However  for channel  Radio 1, you also need to provide the
+location  information. The possible values are england (England), northernireland (Norhtern
+Ireland), scotland(Scotland) and wales(Wales). And for channel Radio 4, the possible values
+are FM & LW.
 
     use strict; use warnings;
     use BBC::Radio::ProgrammesSchedules;
@@ -125,7 +127,7 @@ LW.
 
     # BBC Radio 4 Extra
     $bbc = BBC::Radio::ProgrammesSchedules->new({
-           channel => 'radio4extra', 
+           channel => 'radio4extra',
            yyyy    => 2011,
            mm      => 4,
            dd      => 4 });
@@ -209,6 +211,42 @@ sub get_listings
 {
     my $self = shift;
     return $self->{listings};
+}
+
+=head2 as_string()
+
+Returns listings in a human readable format.
+
+    use strict; use warnings;
+    use Date::Holidays::PAK;
+
+    my $bbc = BBC::Radio::ProgrammesSchedules->new({
+              channel  => 'radio1',
+              location => 'london',
+              yyyy     => 2011,
+              mm       => 4,
+              dd       => 4 });
+
+    print $bbc->as_string();
+
+    # or even simply
+    print $bbc;
+
+=cut
+
+sub as_string
+{
+    my $self = shift;
+    my ($listings);
+    foreach (@{$self->{listings}})
+    {
+        $listings .= sprintf("  Start Time: %s\n", $_->{start_time});
+        $listings .= sprintf("    End Time: %s\n", $_->{end_time});
+        $listings .= sprintf("       Title: %s\n", $_->{title});
+        $listings .= sprintf("         URL: %s\n", $_->{url});
+        $listings .= "-------------------\n";
+    }
+    return $listings;
 }
 
 sub _get_listings
@@ -300,7 +338,7 @@ L<http://search.cpan.org/dist/BBC-Radio-ProgrammesSchedules/>
 
 =head1 ACKNOWLEDGEMENT
 
-BBC::Radio::ProgrammesSchedules provides infornmation from BBC office website. The information should be used 
+BBC::Radio::ProgrammesSchedules provides infornmation from BBC office website. The information should be used
 as it is without any additional information. BBC remains the owner of the data. The terms and condition for
 Personal and Non-business use can be found here http://www.bbc.co.uk/terms/personal.shtml.
 
