@@ -18,11 +18,11 @@ BBC::Radio::ProgrammesSchedules - Interface to BBC Radio programmes schedules.
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 Readonly my $BASE_URL => 'http://www.bbc.co.uk';
 Readonly my $CHANNELS => 
@@ -182,7 +182,7 @@ start time, end time, short description and url to get more detail of each progr
     use strict; use warnings;
     use BBC::Radio::ProgrammesSchedules;
 
-    my $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio1', location => 'london' });
+    my $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio1', location => 'england' });
     my $listings = $bbc->get_listings();
 
 =cut
@@ -200,7 +200,7 @@ Returns listings in a human readable format.
     use strict; use warnings;
     use Date::Holidays::PAK;
 
-    my $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio1', location => 'london' });
+    my $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio1', location => 'england' });
 
     print $bbc->as_string();
 

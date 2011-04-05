@@ -1,5 +1,8 @@
 Revision history for BBC-Radio-ProgrammesSchedules
 
+0.05    Tue Apr 05 16:18:19 2011
+        - Fixed the pod for method get_listings() and as_string() as location was set as london.
+
 0.04    Tue Apr 05 15:32:22 2011
         - Fixed the pod for CONSTRUCTOR as location was set as london.
 
