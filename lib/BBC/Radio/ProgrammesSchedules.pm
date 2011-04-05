@@ -18,11 +18,11 @@ BBC::Radio::ProgrammesSchedules - Interface to BBC Radio programmes schedules.
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 Readonly my $BASE_URL => 'http://www.bbc.co.uk';
 Readonly my $CHANNELS => 
@@ -123,7 +123,7 @@ The yyyy, mm and dd are optional. If missing picks up the current year, month an
     my ($bbc);
 
     # BBC Radio 1
-    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio1', location => 'london' });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio1', location => 'england' });
 
     # BBC Radio 1Xtra
     $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => '1xtra' });

@@ -1,5 +1,8 @@
 Revision history for BBC-Radio-ProgrammesSchedules
 
+0.04    Tue Apr 05 15:32:22 2011
+        - Fixed the pod for CONSTRUCTOR as location was set as london.
+
 0.03    Tue Apr 05 10:56:10 2011
         - Made yyyy, mm and dd as optional input parameters.
         - Updated to pick current date in optional parameters yyyy, mm and dd are missings.
