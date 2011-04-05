@@ -1,5 +1,12 @@
 Revision history for BBC-Radio-ProgrammesSchedules
 
+0.03    Tue Apr 05 10:56:10 2011
+        - Made yyyy, mm and dd as optional input parameters.
+        - Updated to pick current date in optional parameters yyyy, mm and dd are missings.
+        - Added new key frequency for Radio 4, instead of using location for the same.
+        - Added HTML::Entities and Time::localtime to the dependencies list.
+        - Added TABLE for input parameters possible values to the pod.
+
 0.02    Mon Apr 04 16:57:00 2011
         - Corrected pod for CONSTRUCTOR.
         - Added method as_string().

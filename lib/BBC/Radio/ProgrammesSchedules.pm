@@ -7,8 +7,10 @@ use overload q("") => \&as_string, fallback => 1;
 use Carp;
 use Readonly;
 use Data::Dumper;
-use LWP::UserAgent;
 use HTTP::Request;
+use LWP::UserAgent;
+use HTML::Entities;
+use Time::localtime;
 
 =head1 NAME
 
@@ -16,11 +18,11 @@ BBC::Radio::ProgrammesSchedules - Interface to BBC Radio programmes schedules.
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 Readonly my $BASE_URL => 'http://www.bbc.co.uk';
 Readonly my $CHANNELS => 
@@ -32,7 +34,7 @@ Readonly my $CHANNELS =>
     radio4             => 'Radio 4',
     radio4extra        => 'Radio 4 Extra',
     '5live'            => '5 Live',
-    '5livesportsextra' => '5 Live sports extra',
+    '5livesportsextra' => '5 Live Sports Extra',
     '6music'           => '6 Music',
     radio7             => 'Radio 7',
     aisannetwork       => 'Asian Network',
@@ -45,16 +47,19 @@ Readonly my $LOCATIONS =>
                 northernireland => 'Northern Ireland',
                 scotland        => 'Scotland',
                 wales           => 'Wales' },
+};
+
+Readonly my $FREQUENCIES =>
+{
     radio4 => { fm => 'FM',
                 lw => 'LW' }
 };
 
 =head1 SYNOPSIS
 
-Each week, nearly 35 million people listen to BBC Radio. The BBC offers a portfolio of services aimed
-at offering listeners the highest quality programmes, whatever their interest or mood.
-
-=head2 BBC Radio includes
+Each week, nearly 35 million people listen to BBC Radio. The BBC offers a portfolio of services 
+aimed at offering listeners the highest quality programmes, whatever their interest or mood. It 
+includes the following:
 
 =over 5
 
@@ -76,103 +81,82 @@ and many more.
 
 The  module  provides  programmes  schedules for Radio 1, 1Xtra, Radio 2, Radio 3, Radio 4,
 Radio  4  Extra,  5  Live,  5 Live Sports Extra, 6 Music,  Radio 7, Asian Network and World
-Service.  The  constructor expects a reference to an anonymous hash as input parameter. For
-most of the radio channels, the minimum it expects are channel name, year, month(1 for Jan,
-2 for Feb and so on)  and day.  However  for channel  Radio 1, you also need to provide the
-location  information. The possible values are england (England), northernireland (Norhtern
-Ireland), scotland(Scotland) and wales(Wales). And for channel Radio 4, the possible values
-are FM & LW.
+Service. The constructor expects a reference to an anonymous hash as input parameter. Table
+below shows the possible value of various key (channel, location, frequency, yyyy, mm, dd).
+The yyyy, mm and dd are optional. If missing picks up the current year, month and day.
 
+    -----------------------------------------------------------------------------------------
+    | Name                | Channel          | Location        | Frequency | YYYY | MM | DD |
+    -----------------------------------------------------------------------------------------
+    | Radio 1             | radio1           | england         | N/A       | 2011 | 11 | 15 |
+    |                     |                  | northernireland |           |      |    |    |
+    |                     |                  | scotland        |           |      |    |    |
+    |                     |                  | wales           |           |      |    |    |
+    |                     |                  |                 |           |      |    |    |    
+    | Radio 1Xtra         | 1xtra            | N/A             | N/A       | 2011 | 11 | 15 |
+    |                     |                  |                 |           |      |    |    |        
+    | Radio 2             | radio2           | N/A             | N/A       | 2011 | 11 | 15 |
+    |                     |                  |                 |           |      |    |    |        
+    | Radio 3             | radio3           | N/A             | N/A       | 2011 | 11 | 15 |
+    |                     |                  |                 |           |      |    |    |        
+    | Radio 4             | radio4           | N/A             | fm        | 2011 | 11 | 15 |
+    |                     |                  |                 | lw        |      |    |    |
+    |                     |                  |                 |           |      |    |    |        
+    | Radio 4 Extra       | radio4extra      | N/A             | N/A       | 2011 | 11 | 15 |
+    |                     |                  |                 |           |      |    |    |        
+    | 5 Live              | 5live            | N/A             | N/A       | 2011 | 11 | 15 |
+    |                     |                  |                 |           |      |    |    |        
+    | 5 Live Sports Extra | 5livesportsextra | N/A             | N/A       | 2011 | 11 | 15 |
+    |                     |                  |                 |           |      |    |    |        
+    | 6 Music             | 6music           | N/A             | N/A       | 2011 | 11 | 15 |
+    |                     |                  |                 |           |      |    |    |        
+    | Radio 7             | radio7           | N/A             | N/A       | 2011 | 11 | 15 |
+    |                     |                  |                 |           |      |    |    |        
+    | Asian Network       | asiannetwork     | N/A             | N/A       | 2011 | 11 | 15 |
+    |                     |                  |                 |           |      |    |    |        
+    | World Service       | worldservice     | N/A             | N/A       | 2011 | 11 | 15 |
+    -----------------------------------------------------------------------------------------
+    
     use strict; use warnings;
     use BBC::Radio::ProgrammesSchedules;
 
     my ($bbc);
 
     # BBC Radio 1
-    $bbc = BBC::Radio::ProgrammesSchedules->new({
-           channel  => 'radio1',
-           location => 'london',
-           yyyy     => 2011,
-           mm       => 4,
-           dd       => 4 });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio1', location => 'london' });
 
     # BBC Radio 1Xtra
-    $bbc = BBC::Radio::ProgrammesSchedules->new({
-           channel => '1xtra',
-           yyyy    => 2011,
-           mm      => 4,
-           dd      => 4 });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => '1xtra' });
 
     # BBC Radio 2
-    $bbc = BBC::Radio::ProgrammesSchedules->new({
-           channel => 'radio2',
-           yyyy    => 2011,
-           mm      => 4,
-           dd      => 4 });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio2' });
 
     # BBC Radio 3
-    $bbc = BBC::Radio::ProgrammesSchedules->new({
-           channel => 'radio3',
-           yyyy    => 2011,
-           mm      => 4,
-           dd      => 4 });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio3' });
 
     # BBC Radio 4
-    $bbc = BBC::Radio::ProgrammesSchedules->new({
-          channel  => 'radio4',
-           location => 'fm',
-           yyyy     => 2011,
-           mm       => 4,
-           dd       => 4 });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio4', frequency => 'fm' });
 
     # BBC Radio 4 Extra
-    $bbc = BBC::Radio::ProgrammesSchedules->new({
-           channel => 'radio4extra',
-           yyyy    => 2011,
-           mm      => 4,
-           dd      => 4 });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio4extra' });
 
     # BBC 5 Live
-    $bbc = BBC::Radio::ProgrammesSchedules->new({
-           channel => '5live',
-           yyyy    => 2011,
-           mm      => 4,
-           dd      => 4 });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => '5live' });
 
     # BBC 5 Live Sports Extra
-    $bbc = BBC::Radio::ProgrammesSchedules->new({
-           channel => '5livesportsextra',
-           yyyy    => 2011,
-           mm      => 4,
-           dd      => 4 });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => '5livesportsextra' });
 
     # BBC 6 Music
-    $bbc = BBC::Radio::ProgrammesSchedules->new({
-           channel => '6music',
-           yyyy    => 2011,
-           mm      => 4,
-           dd      => 4 });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => '6music' });
 
     # BBC Radio 7
-    $bbc = BBC::Radio::ProgrammesSchedules->new({
-           channel => 'radio7',
-           yyyy    => 2011,
-           mm      => 4,
-           dd      => 4 });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio7' });
 
     # BBC Asian Network
-    $bbc = BBC::Radio::ProgrammesSchedules->new({
-           channel => 'aisannetwork',
-           yyyy    => 2011,
-           mm      => 4,
-           dd      => 4 });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'aisannetwork' });
 
     # BBC World Service
-    $bbc = BBC::Radio::ProgrammesSchedules->new({
-           channel => 'worldservice',
-           yyyy    => 2011,
-           mm      => 4,
-           dd      => 4 });
+    $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'worldservice' });
 
 =cut
 
@@ -181,9 +165,10 @@ sub new
     my $class = shift;
     my $param = shift;
 
-    my $self  = {};
-    $self->{listings} = _get_listings($param);
+    my $self  = $param;
     bless $self, $class;
+    $self->_build_listings();
+    
     return $self;
 }
 
@@ -197,12 +182,7 @@ start time, end time, short description and url to get more detail of each progr
     use strict; use warnings;
     use BBC::Radio::ProgrammesSchedules;
 
-    my $bbc = BBC::Radio::ProgrammesSchedules->new({
-              channel  => 'radio1',
-              location => 'london',
-              yyyy     => 2011,
-              mm       => 4,
-              dd       => 4 });
+    my $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio1', location => 'london' });
     my $listings = $bbc->get_listings();
 
 =cut
@@ -220,12 +200,7 @@ Returns listings in a human readable format.
     use strict; use warnings;
     use Date::Holidays::PAK;
 
-    my $bbc = BBC::Radio::ProgrammesSchedules->new({
-              channel  => 'radio1',
-              location => 'london',
-              yyyy     => 2011,
-              mm       => 4,
-              dd       => 4 });
+    my $bbc = BBC::Radio::ProgrammesSchedules->new({ channel => 'radio1', location => 'london' });
 
     print $bbc->as_string();
 
@@ -249,14 +224,24 @@ sub as_string
     return $listings;
 }
 
-sub _get_listings
+sub _build_listings
 {
-    my $param = shift;
+    my $self = shift;
 
-    my $url   = sprintf("%s/%s/programmes/schedules", $BASE_URL, $param->{channel});
-    $url .= '/'. $param->{location} 
-        if (defined($param->{location}) && exists($LOCATIONS->{$param->{channel}}->{$param->{location}}));
-    $url .= '/'. join("/", $param->{yyyy}, $param->{mm}, $param->{dd}, "ataglance");
+    my $url   = sprintf("%s/%s/programmes/schedules", $BASE_URL, $self->{channel});
+    $url .= '/'. $self->{location} 
+        if (defined($self->{location}) && exists($LOCATIONS->{$self->{channel}}->{$self->{location}}));
+    $url .= '/'. $self->{frequency} 
+        if (defined($self->{frequency}) && exists($FREQUENCIES->{$self->{channel}}->{$self->{frequency}}));
+        
+    unless (defined($self->{yyyy}) && defined($self->{mm}) && defined($self->{dd}))
+    {
+        my $today = localtime; 
+        $self->{yyyy} = $today->year+1900;
+        $self->{mm}   = $today->mon+1;
+        $self->{dd}   = $today->mday;
+    }
+    $url .= '/'. join("/", $self->{yyyy}, $self->{mm}, $self->{dd}, "ataglance");
 
     my $browser  = LWP::UserAgent->new();
     my $request  = HTTP::Request->new(GET=>$url);
@@ -288,14 +273,14 @@ sub _get_listings
         }
         elsif (/class\=\"title\"\>(.*)\<\/span\>/)
         {
-            $program->{title} = $1;
+            $program->{title} = HTML::Entities::decode($1);
             push @$listings, $program if ((defined $program) && scalar(keys %{$program}) == 4);
             $program = undef;
             $count++;
         }
     }
 
-    return $listings;
+    $self->{listings} = $listings;
 }
 
 =head1 AUTHOR
@@ -338,9 +323,9 @@ L<http://search.cpan.org/dist/BBC-Radio-ProgrammesSchedules/>
 
 =head1 ACKNOWLEDGEMENT
 
-BBC::Radio::ProgrammesSchedules provides infornmation from BBC office website. The information should be used
-as it is without any additional information. BBC remains the owner of the data. The terms and condition for
-Personal and Non-business use can be found here http://www.bbc.co.uk/terms/personal.shtml.
+BBC::Radio::ProgrammesSchedules provides infornmation from BBC official website. The information should be used
+as it is without any modifications. BBC remains the sole owner of the data. The terms and condition for Personal 
+and Non-business use can be found here http://www.bbc.co.uk/terms/personal.shtml.
 
 =head1 LICENSE AND COPYRIGHT
 
