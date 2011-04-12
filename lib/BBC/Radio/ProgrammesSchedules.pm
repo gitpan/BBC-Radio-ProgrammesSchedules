@@ -18,11 +18,11 @@ BBC::Radio::ProgrammesSchedules - Interface to BBC Radio programmes schedules.
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =cut
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 Readonly my $BASE_URL => 'http://www.bbc.co.uk';
 Readonly my $CHANNELS => 
@@ -165,6 +165,7 @@ sub new
     my $class = shift;
     my $param = shift;
 
+    _validate_param($param);
     my $self  = $param;
     bless $self, $class;
     $self->_build_listings();
@@ -261,7 +262,7 @@ sub _build_listings
         next if /^$/;
 
         if (/\<span class=\"starttime\"\>(.*)\<\/span\>\<span class=\"endtime\"\>&#8211\;(.*)\<\/span\>/)
-{
+        {
             my($hh,$mm) = split/\:/,$1,2;
             last if ($count > 3 && $hh == 0);
             $program->{start_time} = $1;
@@ -281,6 +282,30 @@ sub _build_listings
     }
 
     $self->{listings} = $listings;
+}
+
+sub _validate_param
+{
+    my $param = shift;
+    
+    croak("ERROR: Input param has to be a ref to HASH.\n")
+        if (ref($param) ne 'HASH');
+    croak("ERROR: Missing key channel.\n")
+        unless exists($param->{channel});
+    croak("ERROR: Invalid value for channel.\n")
+        unless exists($CHANNELS->{$param->{channel}});
+    croak("ERROR: Invalid number of keys found in the input hash.\n")
+        if (($param->{channel} =~ /radio[1|4]/i) && scalar(keys %{$param}) != 2);
+    croak("ERROR: Invalid number of keys found in the input hash.\n")
+        if (($param->{channel} !~ /radio[1|4]/i) && scalar(keys %{$param}) != 1);
+    croak("ERROR: Missing key location.\n")
+        if (($param->{channel} =~ /radio1/i) && !exists($param->{location}));
+    croak("ERROR: Missing key frequency.\n")
+        if (($param->{channel} =~ /radio4/i) && !exists($param->{frequency}));
+    croak("ERROR: Invalid value for location.\n")
+        if (($param->{channel} =~ /radio1/i) && !exists($LOCATIONS->{radio1}->{$param->{location}}));
+    croak("ERROR: Invalid value for frequency.\n")
+        if (($param->{channel} =~ /radio4/i) && !exists($FREQUENCIES->{radio4}->{$param->{frequency}}));
 }
 
 =head1 AUTHOR
@@ -323,7 +348,7 @@ L<http://search.cpan.org/dist/BBC-Radio-ProgrammesSchedules/>
 
 =head1 ACKNOWLEDGEMENT
 
-BBC::Radio::ProgrammesSchedules provides infornmation from BBC official website. The information should be used
+BBC::Radio::ProgrammesSchedules provides information from BBC official website.  This information should be used
 as it is without any modifications. BBC remains the sole owner of the data. The terms and condition for Personal 
 and Non-business use can be found here http://www.bbc.co.uk/terms/personal.shtml.
 
