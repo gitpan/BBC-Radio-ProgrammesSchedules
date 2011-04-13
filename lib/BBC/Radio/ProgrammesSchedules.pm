@@ -18,11 +18,11 @@ BBC::Radio::ProgrammesSchedules - Interface to BBC Radio programmes schedules.
 
 =head1 VERSION
 
-Version 0.06
+Version 0.07
 
 =cut
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 Readonly my $BASE_URL => 'http://www.bbc.co.uk';
 Readonly my $CHANNELS => 
@@ -294,10 +294,24 @@ sub _validate_param
         unless exists($param->{channel});
     croak("ERROR: Invalid value for channel.\n")
         unless exists($CHANNELS->{$param->{channel}});
+    croak("ERROR: Missing key mm from input hash.\n")
+        if (defined($param->{yyyy}) && !exists($param->{mm}));
+    croak("ERROR: Missing key dd from input hash.\n")
+        if (defined($param->{yyyy}) && !exists($param->{dd}));
+    croak("ERROR: Missing key yyyy from input hash.\n")
+        if (defined($param->{mm}) && !exists($param->{yyyy}));
+    croak("ERROR: Missing key dd from input hash.\n")
+        if (defined($param->{mm}) && !exists($param->{dd}));
+    croak("ERROR: Missing key yyyy from input hash.\n")
+        if (defined($param->{dd}) && !exists($param->{yyyy}));
+    croak("ERROR: Missing key mm from input hash.\n")
+        if (defined($param->{dd}) && !exists($param->{mm}));
+    my $count = 0;
+    $count = 3 if (defined($param->{yyyy}) && defined($param->{mm}) && defined($param->{dd}));    
     croak("ERROR: Invalid number of keys found in the input hash.\n")
-        if (($param->{channel} =~ /radio[1|4]/i) && scalar(keys %{$param}) != 2);
+        if (($param->{channel} =~ /radio[1|4]/i) && (scalar(keys %{$param}) != (2+$count)));
     croak("ERROR: Invalid number of keys found in the input hash.\n")
-        if (($param->{channel} !~ /radio[1|4]/i) && scalar(keys %{$param}) != 1);
+        if (($param->{channel} !~ /radio[1|4]/i) && (scalar(keys %{$param}) != (1+$count)));
     croak("ERROR: Missing key location.\n")
         if (($param->{channel} =~ /radio1/i) && !exists($param->{location}));
     croak("ERROR: Missing key frequency.\n")

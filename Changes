@@ -1,5 +1,9 @@
 Revision history for BBC-Radio-ProgrammesSchedules
 
+0.07    Wed Apr 13 09:44:20 2011
+        - Added date checking to the method _validate_param().
+        - Added more test case for date checking to 01-unit-test.t.    
+
 0.06    Tue Apr 12 17:48:11 2011
         - Added internal method _validate_param().
         - Added unit test 01-unit-test.t for method _validate_param().
