@@ -18,11 +18,11 @@ BBC::Radio::ProgrammesSchedules - Interface to BBC Radio programmes schedules.
 
 =head1 VERSION
 
-Version 0.07
+Version 0.08
 
 =cut
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 Readonly my $BASE_URL => 'http://www.bbc.co.uk';
 Readonly my $CHANNELS => 
@@ -79,15 +79,15 @@ and many more.
 
 =head1 CONSTRUCTOR
 
-The  module  provides  programmes  schedules for Radio 1, 1Xtra, Radio 2, Radio 3, Radio 4,
-Radio  4  Extra,  5  Live,  5 Live Sports Extra, 6 Music,  Radio 7, Asian Network and World
-Service. The constructor expects a reference to an anonymous hash as input parameter. Table
-below shows the possible value of various key (channel, location, frequency, yyyy, mm, dd).
-The yyyy, mm and dd are optional. If missing picks up the current year, month and day.
+The  module provides programmes schedules for Radio 1, 1Xtra, Radio 2, Radio 3, Radio 4, Radio
+ 4  Extra,  5  Live,  5 Live Sports Extra, 6 Music,  Radio 7, Asian Network and World Service. 
+The constructor expects a reference to an anonymous hash as input parameter. Table below shows 
+the possible value of various key ( channel, location, frequency, yyyy, mm, dd ). The yyyy, mm 
+and dd are optional. If missing picks up the current year, month and day.
 
-    -----------------------------------------------------------------------------------------
+    +---------------------+------------------+-----------------+-----------+------+----+----+
     | Name                | Channel          | Location        | Frequency | YYYY | MM | DD |
-    -----------------------------------------------------------------------------------------
+    +---------------------+------------------+-----------------+-----------+------+----+----+
     | Radio 1             | radio1           | england         | N/A       | 2011 | 11 | 15 |
     |                     |                  | northernireland |           |      |    |    |
     |                     |                  | scotland        |           |      |    |    |
@@ -115,7 +115,7 @@ The yyyy, mm and dd are optional. If missing picks up the current year, month an
     | Asian Network       | asiannetwork     | N/A             | N/A       | 2011 | 11 | 15 |
     |                     |                  |                 |           |      |    |    |        
     | World Service       | worldservice     | N/A             | N/A       | 2011 | 11 | 15 |
-    -----------------------------------------------------------------------------------------
+    +---------------------+------------------+-----------------+-----------+------+----+----+
     
     use strict; use warnings;
     use BBC::Radio::ProgrammesSchedules;
@@ -216,10 +216,10 @@ sub as_string
     my ($listings);
     foreach (@{$self->{listings}})
     {
-        $listings .= sprintf("  Start Time: %s\n", $_->{start_time});
-        $listings .= sprintf("    End Time: %s\n", $_->{end_time});
-        $listings .= sprintf("       Title: %s\n", $_->{title});
-        $listings .= sprintf("         URL: %s\n", $_->{url});
+        $listings .= sprintf("Start Time: %s\n", $_->{start_time});
+        $listings .= sprintf("  End Time: %s\n", $_->{end_time});
+        $listings .= sprintf("     Title: %s\n", $_->{title});
+        $listings .= sprintf("       URL: %s\n", $_->{url});
         $listings .= "-------------------\n";
     }
     return $listings;
@@ -328,9 +328,10 @@ Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-bbc-radio-programmesschedules at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=BBC-Radio-ProgrammesSchedules>.  
-I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
+Please report any bug/feature requests to C<bug-bbc-radio-programmesschedules at rt.cpan.org>, 
+or through the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=BBC-Radio-ProgrammesSchedules>.  
+I  will  be  notified, and then you'll automatically be notified of progress  on your bug as I 
+make changes.
 
 =head1 SUPPORT
 
@@ -362,9 +363,9 @@ L<http://search.cpan.org/dist/BBC-Radio-ProgrammesSchedules/>
 
 =head1 ACKNOWLEDGEMENT
 
-BBC::Radio::ProgrammesSchedules provides information from BBC official website.  This information should be used
-as it is without any modifications. BBC remains the sole owner of the data. The terms and condition for Personal 
-and Non-business use can be found here http://www.bbc.co.uk/terms/personal.shtml.
+BBC::Radio::ProgrammesSchedules provides  information  from BBC official website. This  should
+be used as it is without any modifications. BBC remains the sole owner of the data.  The terms 
+and condition for Personal and Non-business use can be found here http://www.bbc.co.uk/terms/personal.shtml.
 
 =head1 LICENSE AND COPYRIGHT
 
@@ -378,7 +379,8 @@ See http://dev.perl.org/licenses/ for more information.
 
 =head1 DISCLAIMER
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This  program  is  distributed  in  the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 =cut
 
