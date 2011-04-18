@@ -1,5 +1,8 @@
 Revision history for BBC-Radio-ProgrammesSchedules
 
+0.09    Mon Apr 18 16:48:10 2011
+        - Renamed title "SYNOPSIS" to "DESCRIPTION".
+
 0.08    Mon Apr 18 15:30:00 2011
         - Cosmetics changes.
 

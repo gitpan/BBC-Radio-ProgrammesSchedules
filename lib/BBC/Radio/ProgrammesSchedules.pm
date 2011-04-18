@@ -18,11 +18,11 @@ BBC::Radio::ProgrammesSchedules - Interface to BBC Radio programmes schedules.
 
 =head1 VERSION
 
-Version 0.08
+Version 0.09
 
 =cut
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 Readonly my $BASE_URL => 'http://www.bbc.co.uk';
 Readonly my $CHANNELS => 
@@ -55,10 +55,10 @@ Readonly my $FREQUENCIES =>
                 lw => 'LW' }
 };
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
-Each week, nearly 35 million people listen to BBC Radio. The BBC offers a portfolio of services 
-aimed at offering listeners the highest quality programmes, whatever their interest or mood. It 
+Each week, nearly 35 million people listen to BBC Radio.The BBC offers a portfolio of services 
+aimed at offering listeners the highest quality programmes, whatever their interest or mood.It 
 includes the following:
 
 =over 5
@@ -177,8 +177,8 @@ sub new
 
 =head2 get_listings()
 
-Return the schedules listings as reference to an array of anonymous hash containing
-start time, end time, short description and url to get more detail of each program.
+Return the schedules listings as reference to an array of anonymous hash containing start time
+, end time, short description and url to get more detail of each program.
 
     use strict; use warnings;
     use BBC::Radio::ProgrammesSchedules;
